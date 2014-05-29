@@ -1,38 +1,27 @@
 module.exports = (robot) ->
-  robot.respond /what up(.*)/i, (msg) ->
-    giveStatus(msg)
 
-  robot.respond /what's up(.*)/i, (msg) ->
-    giveStatus(msg)
+  key = 'teeder_status'
+  maxMessageLength = 140
+  maxMessageHistory = 100
+  defaultResponseSize = 5
 
-  robot.respond /status (.*)/i, (msg)->
-    text = msg.match[1].trim()
 
-    addStatus(msg, text)
-    msg.send 'Roger.'
+  robot.respond /(.*)/i, (msg) ->
+    message =  msg.match[1].trim().substring(0,maxMessageLength)
+    if message.match /wha/
+      getStatus(msg)
+    else
+      msg.send message
+      putStatus(message)
 
-  addStatus = (msg, text) ->
-    key = determineRoomKey(msg)
+  putStatus = (message, text) ->
     data = robot.brain.get(key)
     unless data instanceof Array
       data = []
-    data.push message
-    robot.brain.set(key, data)
+    data.unshift message
+    robot.brain.set(key, data.slice(0,defaultResponseSize))
 
-  giveStatus = (msg) ->
-    roomName = msg.match[1].trim()
-    roomName = msg.message.room if roomName == ''
-
-    data = robot.brain.get(determineRoomKey(msg, msg.match[1]))
-    msg.send "Status messages for #{roomName}"
+  getStatus = (msg) ->
+    data = robot.brain.get(key).slice(0, defaultResponseSize).reverse()
     for message in data
       msg.send(message)
-
-  determineRoomKey = (msg, roomName) ->
-    "status_log_#{determineRoomName(msg, roomName)}"
-
-  determineRoomName = (msg, roomName) ->
-    if roomName == undefined || roomName.trim() == ''
-      roomName = msg.message.room
-
-    roomName.toLowerCase()
