@@ -151,7 +151,47 @@ Add the subdomain hubot should connect to. If you web URL looks like
 
 [hubot-adapters]: https://github.com/github/hubot/blob/master/docs/adapters.md
 
+## Hipchat Variables
+
+The bot depends on the following environment variables being set:
+
+HUBOT_HIPCHAT_JID
+HUBOT_HIPCHAT_PASSWORD
+
+The JID comes from [this page](https://www.hipchat.com/account/xmpp) assuming
+you are logged into the hipchat website as the bot user.
+
+See [this page](https://github.com/hipchat/hubot-hipchat) for more hipchat configuration
+options. 
+
+
 ## Restart the bot
 
 You may want to get comfortable with `heroku logs` and `heroku restart`
 if you're having issues.
+
+
+## Installation on contacts server
+
+teederbot is installed on the contacts server contacts-ci.roving.com (username ci).
+
+The project is cloned down to the directory ~/projects/teederbot . 
+
+Once the repo is up to date on that server, run:
+
+1. `npm install`
+2. `./bin/hubot`
+
+This will install dependencies & start up the command line interface to hubot. To start a hubot that will
+connect to hipchat, run
+
+    ./bin/hubot --adapter hipchat
+
+See the section [Hipchat variables]()
+
+## Node installation and other notes
+
+Since we are on an old Ubuntu version, the default node package is quite old. See
+instructions [here](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager)
+on getting a newer version of node.
+
